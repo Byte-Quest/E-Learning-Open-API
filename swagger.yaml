@@ -1,0 +1,261 @@
+openapi: 3.0.3
+info:
+  title: E-Learning
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+tags:
+  - name: Signup and Login
+    description: Authentication Management
+  - name: Google Authentication
+    description: Google Authentication Management
+  - name: Password
+    description: Password Reset Management
+  - name: Users
+    description: User Management
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Signup and Login
+      operationId: Signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - fullName
+                - email
+                - password
+                - role
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: John.Doe@gmail.com
+                password:
+                  type: string
+                  example: $1234abcd
+                role:
+                  type: string
+                  example: student
+      responses:
+        '201':
+          description: Created Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /auth/login:
+    post:
+      tags:
+        - Signup and Login
+      operationId: Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: John.Doe@gmail.com
+                password:
+                  type: string
+                  example: $1234abcd
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Login"
+                  message:
+                    type: string
+
+  /auth/sso/google:
+    get:
+      tags:
+        - Google Authentication
+      operationId: Google Redirect URL
+      description: Redirect to the Google Login Page
+      responses:
+        '200':
+          description: Successful Operation
+    post:
+      tags:
+        - Google Authentication
+      operationId: Google Signup or Login
+      description: Google Signup or Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - code
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: 4/0AeaYSHCoSLQlzCvmwNfx_purqgyrLWJ2l2JvhmpRW9-amog1Suymw6HL64lKDfOYadviPg
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Login"
+                  message:
+                    type: string
+
+  /auth/forget-password:
+    post:
+      tags:
+        - Password
+      operationId: Forget Password
+      description: Send a Password Reset Link to Provided Email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: John.Doe@gmail.com
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /auth/reset-password:
+    post:
+      tags:
+        - Password
+      operationId: Reset Password
+      description: Changes the Password of the User Who Requested to Reset the Password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - token
+                - password
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: 1I69UCa0BxqtIYVx23Lc
+                password:
+                  type: string
+                  example: $1234abcd
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /users/me:
+    get:
+      tags:
+        - Users
+      operationId: User Profile
+      description: User's All Information
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Profile"
+
+  /users/:userid/roles:
+    patch:
+      tags:
+        - Users
+      operationId: Update User Role
+      description: Update User's Role by Administrator
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - role
+              type: object
+              properties:
+                role:
+                  type: string
+                  example: student
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+components:
+  schemas:
+    Login:
+      type: array
+      items:
+        type: object
+        properties:
+          accessToken:
+            type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhzYW1pZC5hYWgwQGdtYWlsLmNvbSIsIklEIjoiMGFmMTI5ODMtODMzZS00ZDQ0LWJkMzAtNDczOWUyZjBjYmYyIiwiZXhwIjoxNzA5NDY3NjM2LCJpYXQiOjE3MDk0NjA0MzYsImlzcyI6Im1vaGFtbWFkIn0.eU6UyDmdVlIWnuOVQyLi8iVci6WQFa1Tjxl7FMEcQ2U
+    Profile:
+      type: array
+      items:
+        type: object
+        properties:
+          fullName:
+            type: string
+            example: John Doe
+          email:
+            type: string
+            example: John.Doe@gmail.com
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
