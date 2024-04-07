@@ -3,7 +3,7 @@ info:
   title: E-Learning
   version: 1.0.0
 servers:
-  - url: http://localhost:3000/api/v1
+  - url: https://apielearning-dev.bytequest.solutions/api/v1
 tags:
   - name: Signup and Login
     description: Authentication Management
@@ -233,6 +233,79 @@ paths:
                   message:
                     type: string
 
+  /users/update-profile:
+    patch:
+      tags:
+        - Users
+      operationId: Update Profile
+      description: Update The LoggedIn User's Profile
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - fullName
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: John Doe
+                birthday:
+                  type: string
+                  example: 2023-03-30T17:24:12.000Z
+                headline:
+                  type: string
+                  example: Headline About John Doe.
+                location:
+                  type: string
+                  example: Canada, Vancouver
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /users/change-password:
+    patch:
+      tags:
+        - Users
+      operationId: Change Password
+      description: Change The LoggedIn User's Password
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - currentPassword
+                - newPassword
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  example: $1234abcd
+                newPassword:
+                  type: string
+                  example: $abcd1234
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
 components:
   schemas:
     Login:
@@ -254,6 +327,15 @@ components:
           email:
             type: string
             example: John.Doe@gmail.com
+          birthday:
+            type: string
+            example: 2023-03-30T17:24:12Z
+          headline:
+            type: string
+            example: New Headline About User
+          location:
+            type: string
+            example: Canada, Vancouver
   securitySchemes:
     bearerAuth:
       type: http
