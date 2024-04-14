@@ -306,6 +306,38 @@ paths:
                   message:
                     type: string
 
+
+  /users/regions:
+    get:
+      tags:
+        - Users
+      operationId: Regions List
+      description:  Get a List of Regions
+      parameters:
+        - name: keyword
+          in: query
+          description: Search keyword for filtering regions
+          schema:
+            type: string
+          examples:
+            example1:
+              summary: Search for regions containing "Vancouver"
+              value: "Vancouver"
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RegionsData"
+                  meta:
+                    $ref: "#/components/schemas/RegionsMeta"
+
 components:
   schemas:
     Login:
@@ -336,6 +368,43 @@ components:
           location:
             type: string
             example: Canada, Vancouver
+    RegionsData:
+      type: array
+      items:
+        type: object
+        properties:
+          ID:
+            type: string
+            example: 479661dc-3ec6-492b-83b0-e2f11337511a
+          Country:
+            type: string
+            example: Canada
+          City:
+            type: string
+            example: Vancouver
+    RegionsMeta:
+      type: array
+      items:
+        type: object
+        properties:
+          totalItems:
+            type: integer
+            example: 44662
+          totalPages:
+            type: integer
+            example: 4467
+          current:
+            type: integer
+            example: 10
+          next:
+            type: integer
+            example: 11
+          previous:
+            type: integer
+            example: 9
+          perPage:
+            type: integer
+            example: 10
   securitySchemes:
     bearerAuth:
       type: http
