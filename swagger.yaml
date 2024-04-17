@@ -27,7 +27,6 @@ paths:
                 - fullName
                 - email
                 - password
-                - role
               type: object
               properties:
                 fullName:
@@ -39,9 +38,6 @@ paths:
                 password:
                   type: string
                   example: $1234abcd
-                role:
-                  type: string
-                  example: student
       responses:
         '201':
           description: Created Successfully
