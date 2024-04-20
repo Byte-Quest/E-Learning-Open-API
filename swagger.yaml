@@ -89,12 +89,6 @@ paths:
                   message:
                     type: string
                     example: You're logged in!
-        '422':
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LoginUnprocessableEntityError'
         '401':
           description: Unauthorized
           content:
@@ -105,7 +99,12 @@ paths:
                   message:
                     type: string
                     example: Provided credentials are incorrect
-
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginUnprocessableEntityError'
 
   /auth/sso/google:
     get:
@@ -205,12 +204,6 @@ paths:
                   message:
                     type: string
                     example: The password reset link sent to your email
-        '422':
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ForgetPasswordUnprocessableEntityError'
         '400':
           description: Bad Request
           content:
@@ -221,6 +214,12 @@ paths:
                   message:
                     type: string
                     example: Provided credentials are incorrect
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgetPasswordUnprocessableEntityError'
 
   /auth/reset-password:
     post:
@@ -290,6 +289,16 @@ paths:
                 properties:
                   data:
                     $ref: "#/components/schemas/Profile"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not authorized
 
   /users/:userid/roles:
     patch:
@@ -321,6 +330,16 @@ paths:
                   message:
                     type: string
                     example: The user's role changed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not authorized
         '422':
           description: Unprocessable Entity
           content:
@@ -367,6 +386,16 @@ paths:
                   message:
                     type: string
                     example: Your profile updated successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not authorized
         '422':
           description: Unprocessable Entity
           content:
@@ -408,12 +437,6 @@ paths:
                   message:
                     type: string
                     example: The password changed successfully
-        '422':
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChangePasswordUnprocessableEntityError'
         '400':
           description: Bad Request
           content:
@@ -421,9 +444,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  message1:
                     type: string
                     example: The new password you entered is the same as your current password. Please try different password
+                  message2:
+                    type: string
+                    example: The current password you entered is incorrect. Please try again with the correct password
         '401':
           description: Unauthorized
           content:
@@ -433,8 +459,13 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: The current password you entered is incorrect. Please try again with the correct password
-
+                    example: You are not authorized
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePasswordUnprocessableEntityError'
 
   /users/regions:
     get:
@@ -466,6 +497,16 @@ paths:
                     $ref: "#/components/schemas/RegionsData"
                   meta:
                     $ref: "#/components/schemas/RegionsMeta"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not authorized
 
 components:
   schemas:
