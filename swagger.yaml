@@ -48,6 +48,13 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: User Registered
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignUpUnprocessableEntityError'
 
   /auth/login:
     post:
@@ -81,6 +88,24 @@ paths:
                     $ref: "#/components/schemas/Login"
                   message:
                     type: string
+                    example: You're logged in!
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginUnprocessableEntityError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Provided credentials are incorrect
+
 
   /auth/sso/google:
     get:
@@ -91,6 +116,19 @@ paths:
       responses:
         '200':
           description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        example: https://accounts.google.com/o/oauth2/auth?client_id=285806515631-lk9mm12bsvsq75st28ov8fujn2ojqc9l.apps.googleusercontent.com&prompt=consent&redirect_uri=https%3A%2F%2Felearning-dev.bytequest.solutions%2Foauth&response_type=code&scope=openid+profile+email&state=are5s3dftyu3jjkhb9nvwqfrgh3gd5E3sd5f
+
+
     post:
       tags:
         - Google Authentication
@@ -119,6 +157,25 @@ paths:
                     $ref: "#/components/schemas/Login"
                   message:
                     type: string
+                    example: You're logged in!
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bad request error occurred
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleSSOUnprocessableEntityError'
+
+
 
   /auth/forget-password:
     post:
@@ -147,6 +204,23 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: The password reset link sent to your email
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgetPasswordUnprocessableEntityError'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Provided credentials are incorrect
 
   /auth/reset-password:
     post:
@@ -179,6 +253,24 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: The password changed successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Provided credentials are incorrect
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetPasswordUnprocessableEntityError'
+
 
   /users/me:
     get:
@@ -228,6 +320,13 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: The user's role changed successfully
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeRoleUnprocessableEntityError'
 
   /users/update-profile:
     patch:
@@ -267,6 +366,13 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: Your profile updated successfully
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateProfileUnprocessableEntityError'
 
   /users/change-password:
     patch:
@@ -301,6 +407,33 @@ paths:
                 properties:
                   message:
                     type: string
+                    example: The password changed successfully
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangePasswordUnprocessableEntityError'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The new password you entered is the same as your current password. Please try different password
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The current password you entered is incorrect. Please try again with the correct password
 
 
   /users/regions:
@@ -336,6 +469,26 @@ paths:
 
 components:
   schemas:
+    SignUpUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              fullName:
+                type: string
+                example: The FullName must be greater than the specified value.
+              email:
+                type: string
+                example: The Email must be a valid email address
+              password:
+                type: string
+                example: The Password must contain the appropriate number of special characters.
     Login:
       type: array
       items:
@@ -344,6 +497,68 @@ components:
           accessToken:
             type: string
             example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImhzYW1pZC5hYWgwQGdtYWlsLmNvbSIsIklEIjoiMGFmMTI5ODMtODMzZS00ZDQ0LWJkMzAtNDczOWUyZjBjYmYyIiwiZXhwIjoxNzA5NDY3NjM2LCJpYXQiOjE3MDk0NjA0MzYsImlzcyI6Im1vaGFtbWFkIn0.eU6UyDmdVlIWnuOVQyLi8iVci6WQFa1Tjxl7FMEcQ2U
+    LoginUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+                example: The Email must be a valid email address
+              password:
+                type: string
+                example: The Password field is required
+    GoogleSSOUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: The Code field is required
+    ForgetPasswordUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+                example: The Email must be a valid email address
+    ResetPasswordUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              token:
+                type: string
+                example: The Token field is required
+              password:
+                type: string
+                example: The Password must contain the appropriate number of special characters
     Profile:
       type: array
       items:
@@ -364,6 +579,20 @@ components:
           location:
             type: string
             example: Canada, Vancouver
+    ChangeRoleUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                example: The Role field is required
     RegionsData:
       type: array
       items:
@@ -401,6 +630,39 @@ components:
           perPage:
             type: integer
             example: 10
+    UpdateProfileUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              fullName:
+                type: string
+                example: The FullName field is required
+    ChangePasswordUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              currentPassword:
+                type: string
+                example: The CurrentPassword field is required
+              newPassword:
+                type: string
+                example: The Password must contain the appropriate number of special characters
+
+
   securitySchemes:
     bearerAuth:
       type: http
