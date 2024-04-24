@@ -480,9 +480,17 @@ paths:
           schema:
             type: string
           examples:
-            example1:
+            example:
               summary: Search for regions containing "Vancouver"
               value: "Vancouver"
+        - name: page
+          in: query
+          description: Paginate the regions list , If you want to show the Next, Previous and Last Page's button you can use "Meta" section in the response
+          schema:
+            type: integer
+          examples:
+            example:
+              value: 2
       security:
         - bearerAuth: [ ]
       responses:
