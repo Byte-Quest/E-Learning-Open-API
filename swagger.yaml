@@ -13,6 +13,8 @@ tags:
     description: Password Reset Management
   - name: Users
     description: User Management
+  - name: Reviews
+    description: Reviews of A Program or Course
 paths:
   /auth/signup:
     post:
@@ -516,6 +518,125 @@ paths:
                     type: string
                     example: You are not authorized
 
+  /reviews:
+    post:
+      tags:
+        - Reviews
+      operationId: Create Review
+      description: Get a List of Reviews and Stats for all Rating
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - content
+                - targetID
+                - targetType
+                - score
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: it's a Good Course, i'm so happy that i found this course.
+                targetID:
+                  type: string
+                  example: 7c5517ae-f391-579b-dade-4ae7e4b7f417
+                targetType:
+                  type: string
+                  example: Course
+                score:
+                  type: integer
+                  example: 5
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The review created successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not authorized
+        '404':
+          description: Resource Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The requested resource not found
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateReviewUnprocessableEntityError'
+
+  /reviews/:targetId:
+    get:
+      tags:
+        - Reviews
+      operationId: Reviews List
+      description: Get a List of Reviews and Stats for all Rating
+      parameters:
+        - name: page
+          in: query
+          description: Paginate the reviews list , If you want to show the Next, Previous and Last Page's button you can use "Meta" section in the response
+          schema:
+            type: integer
+          examples:
+            example:
+              value: 2
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ReviewsData"
+                  meta:
+                    $ref: "#/components/schemas/ReviewsMeta"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not authorized
+        '404':
+          description: Resource Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The requested resource not found
+
 components:
   schemas:
     SignUpUnprocessableEntityError:
@@ -710,7 +831,97 @@ components:
               newPassword:
                 type: string
                 example: The Password must contain the appropriate number of special characters
-
+    CreateReviewUnprocessableEntityError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation error occurred
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              content:
+                type: string
+                example: The content field is required
+              targetID:
+                type: string
+                example: The targetID field is required
+              targetType:
+                type: string
+                example: The targetType field is required
+              score:
+                type: string
+                example: The score field is required
+    ReviewsData:
+      type: array
+      items:
+        type: object
+        properties:
+          Items:
+            type: array
+            items:
+              type: object
+              properties:
+                ID:
+                  type: string
+                  example: c360beee-78d4-417a-8f73-8d1e25f76502
+                Content:
+                  type: string
+                  example: it's a Good Course, i'm so happy that i found this course.
+                TargetID:
+                  type: string
+                  example: 7c5517ae-f391-579b-dade-4ae7e4b7f417
+                TargetType:
+                  type: string
+                  example: Course
+                Score:
+                  type: integer
+                  example: 5
+                CreatedAt:
+                  type: string
+                  example: 2024-04-27T08:14:21.525Z
+          Stats:
+            type: array
+            items:
+              type: object
+              properties:
+                Score:
+                  type: integer
+                  example: 5
+                Count:
+                  type: integer
+                  example: 8
+                Percentage:
+                  type: integer
+                  example: 47
+          AverageScore:
+            type: integer
+            example: 3.6
+    ReviewsMeta:
+      type: array
+      items:
+        type: object
+        properties:
+          totalItems:
+            type: integer
+            example: 221
+          totalPages:
+            type: integer
+            example: 22
+          current:
+            type: integer
+            example: 10
+          next:
+            type: integer
+            example: 11
+          previous:
+            type: integer
+            example: 9
+          perPage:
+            type: integer
+            example: 10
 
   securitySchemes:
     bearerAuth:
